@@ -12,26 +12,19 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface PostApi {
 
     @GET("/posts")
-    Call<List<Post>> getPosts(
-    );
+    Call<List<Post>> getPosts(@Query("group") int group);
 
     @POST("/posts")
-    Call<Post> createPost(
-            @Body Post post
-    );
+    Call<Post> createPost(@Body Post post);
 
     @DELETE("/posts/{id}")
-    Call<ResponseBody> deletePost(
-            @Path("id") int id
-    );
+    Call<Post> deletePost(@Path("id") int id);
 
     @PUT("/posts/{id}")
-    Call<Post> updatePost(
-            @Path("id") int id,
-            @Body Post post
-    );
+    Call<Post> update(@Path("id") int id, @Body Post post);
 }

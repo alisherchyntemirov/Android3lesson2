@@ -6,44 +6,70 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.android3lesson2.App;
+import com.example.android3lesson2.ItemClick;
 import com.example.android3lesson2.R;
 import com.example.android3lesson2.data.models.Post;
 import com.example.android3lesson2.databinding.FragmentPostsBinding;
 
+import java.io.Serializable;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostsFragment extends Fragment {
 
+public class PostsFragment extends Fragment {
     private FragmentPostsBinding binding;
     private PostsAdapter adapter;
-    private NavController controller;
 
     public PostsFragment() {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new PostsAdapter();
-        NavHostFragment navHostFragment = (NavHostFragment) requireActivity().getSupportFragmentManager().
-                findFragmentById(R.id.nav_host_fragment);
-        assert navHostFragment != null;
-        controller = navHostFragment.getNavController();
+        adapter.setItemClick(new ItemClick() {
+            @Override
+            public void click(int position) {
+                if (adapter.getPost(position).getUserId() == 2)
+                    openFragment(adapter.getPost(position));
+                else
+                    Toast.makeText(requireActivity(), "вы не можете редактировать чужие записи", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void longClick(int position) {
+                Post post3 = adapter.getPost(position);
+                if (post3.getUserId() == 2) {
+                    App.api.deletePost(post3.getId()).enqueue(new Callback<Post>() {
+                        @Override
+                        public void onResponse(Call<Post> call, Response<Post> response) {
+                            adapter.removeItem(position);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Post> call, Throwable t) {
+
+                        }
+                    });
+                } else
+                    Toast.makeText(requireActivity(), "вы не можете удалять чужие записи", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentPostsBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -52,26 +78,42 @@ public class PostsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.rvPosts.setAdapter(adapter);
+        binding.recycler.setAdapter(adapter);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
+
+        App.api.getPosts(36).enqueue(new Callback<List<Post>>() {
             @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.action_postsFragment_to_formFragment);
-            }
-        });
-        App.api.getPosts().enqueue(new Callback<List<Post>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
-                if (response.isSuccessful() && response.body() != null){
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     adapter.setPosts(response.body());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
+            public void onFailure(Call<List<Post>> call, Throwable t) {
 
             }
         });
+
+        initListeners();
     }
+
+    private void initListeners() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.formFragment);
+            }
+        });
+    }
+
+    private void openFragment(Post post) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("key", post);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.formFragment, bundle);
+
+    }
+
 }
