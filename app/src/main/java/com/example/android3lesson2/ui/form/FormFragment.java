@@ -26,10 +26,9 @@ import retrofit2.Response;
 
 public class FormFragment extends Fragment {
     private FragmentFormBinding binding;
-    private static final int USER_ID = 2;
-    public static final int GROUP_ID = 36;
+    private static final int USER_ID = 9;
+    public static final int GROUP_ID = 6;
     private Post post2;
-
     public FormFragment() {
     }
 
@@ -83,13 +82,11 @@ public class FormFragment extends Fragment {
                             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                             navController.navigate(R.id.postsFragment);
                         }
-
                         @Override
                         public void onFailure(Call<Post> call, Throwable t) {
 
                         }
                     });
-
                 }
             }
         });

@@ -27,6 +27,18 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+        name.put(1,"Аделя");
+        name.put(2,"Адеми");
+        name.put(3,"Аделя");
+        name.put(4,"Ринат");
+        name.put(5,"Алым");
+        name.put(6,"Алиаскар");
+        name.put(7,"Баястан");
+        name.put(8,"Рустам");
+        name.put(9,"Алишер");
+        name.put(10,"Алишер");
+        name.put(11,"Тынчтык");
+        name.put(12,"Нурмухаммед");
         notifyDataSetChanged();
     }
 

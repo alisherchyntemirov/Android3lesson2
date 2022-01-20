@@ -41,7 +41,7 @@ public class PostsFragment extends Fragment {
         adapter.setItemClick(new ItemClick() {
             @Override
             public void click(int position) {
-                if (adapter.getPost(position).getUserId() == 2)
+                if (adapter.getPost(position).getUserId() == 9)
                     openFragment(adapter.getPost(position));
                 else
                     Toast.makeText(requireActivity(), "вы не можете редактировать чужие записи", Toast.LENGTH_SHORT).show();
@@ -50,7 +50,7 @@ public class PostsFragment extends Fragment {
             @Override
             public void longClick(int position) {
                 Post post3 = adapter.getPost(position);
-                if (post3.getUserId() == 2) {
+                if (post3.getUserId() == 9) {
                     App.api.deletePost(post3.getId()).enqueue(new Callback<Post>() {
                         @Override
                         public void onResponse(Call<Post> call, Response<Post> response) {
@@ -81,7 +81,7 @@ public class PostsFragment extends Fragment {
         binding.recycler.setAdapter(adapter);
 
 
-        App.api.getPosts(36).enqueue(new Callback<List<Post>>() {
+        App.api.getPosts(5).enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (response.isSuccessful() && response.body() != null) {
